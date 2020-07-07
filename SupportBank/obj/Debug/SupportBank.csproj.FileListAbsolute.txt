@@ -1,0 +1,6 @@
+C:\Work\Training\SupportBank\SupportBank\SupportBank\bin\Debug\SupportBank.exe
+C:\Work\Training\SupportBank\SupportBank\SupportBank\bin\Debug\SupportBank.pdb
+C:\Work\Training\SupportBank\SupportBank\SupportBank\obj\Debug\SupportBank.csprojAssemblyReference.cache
+C:\Work\Training\SupportBank\SupportBank\SupportBank\obj\Debug\SupportBank.csproj.CoreCompileInputs.cache
+C:\Work\Training\SupportBank\SupportBank\SupportBank\obj\Debug\SupportBank.exe
+C:\Work\Training\SupportBank\SupportBank\SupportBank\obj\Debug\SupportBank.pdb
