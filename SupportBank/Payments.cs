@@ -9,9 +9,8 @@ namespace SupportBank
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
         public static Dictionary<string,Account> MakeAllPayments(string[] input, Dictionary<string,Account> accounts)
         {
-            for (int i = 1; i < input.Length-1; i++)
+            for (int i = 1; i < input.Length; i++)
             {
-                logger.Info("Starting split");
                 string[] line = input[i].Split(',');
                 DateTime date;
                 if (!DateTime.TryParse(line[0], out date))
