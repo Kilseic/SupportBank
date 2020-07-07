@@ -3,18 +3,22 @@ using System.Collections.Generic;
 
 namespace SupportBank
 {
-    public static class Globals
+    class Account
     {
-        public static Dictionary<string,double> accounts = new Dictionary<string, double>();
+        public double amount;
+        public List<string> transactionHistory;
+
     }
+    
     internal class Program
     {
         public static void Main(string[] args)
         {
+            Dictionary<string, Account> accounts = new Dictionary<string, Account>();
             string[] lines = ReadFiles();
-            MakeAllPayments(lines);
-            string command = UserInput("Please enter a command.");
-            ExecuteCommand(command);
+            accounts = MakeAllPayments(lines, accounts);
+            string command = UserInput("Please enter a command:");
+            ExecuteCommand(command, lines, accounts);
         }
 
         private static string UserInput(string question)
@@ -23,21 +27,25 @@ namespace SupportBank
             return Console.ReadLine();
         }
 
-        private static void ExecuteCommand(string command)
+        private static void ExecuteCommand(string command, string[] lines, Dictionary<string,Account> accounts)
         {
             if (command == "List All")
             {
-                foreach (KeyValuePair<string,double> kvp in Globals.accounts)
+                foreach (KeyValuePair<string,Account> kvp in accounts)
                 {
-                    Console.WriteLine(kvp.Key + ": £" + kvp.Value);
+                    Console.WriteLine(kvp.Key + ": £" + kvp.Value.amount);
                 }
             } else if (command.Substring(0, 5) == "List ")
             {
                 string name = command.Substring(5, command.Length - 5);
-                double value;
-                if (Globals.accounts.TryGetValue(name, out value))
+                Account value;
+                if (accounts.TryGetValue(name, out value))
                 {
-                    Console.WriteLine(name + ": £" + Globals.accounts[name]);
+                    Console.WriteLine(name + ": £" + accounts[name].amount);
+                    foreach (string i in accounts[name].transactionHistory)
+                    {
+                        Console.WriteLine(i);
+                    }
                 }
                 else
                 {
@@ -50,42 +58,64 @@ namespace SupportBank
             }
         }
 
-        private static void MakeAllPayments(string[] input)
+        private static Dictionary<string,Account> MakeAllPayments(string[] input, Dictionary<string,Account> accounts)
         {
             for (int i = 1; i < input.Length-1; i++)
             {
                 string[] line = input[i].Split(',');
-                MakePayment(line[1], line[2], line[4]);
+                accounts = MakePayment(accounts, line[1], line[2], line[4]);
+                accounts = LogPayment(accounts,line[1], line[2], line);
             }
+            return accounts;
+        }
+
+        private static string CreateTransaction(string[] line)
+        {
+            return (line[4] +". Date: " + line[0] + ". Reference: " +line[3]);
+        }
+
+        private static Dictionary<string, Account> LogPayment(Dictionary<string, Account> accounts,string person1, string person2, string[] line)
+        {
+            string transaction = CreateTransaction(line);
+            accounts[person1].transactionHistory.Add("-£" +transaction);
+            accounts[person2].transactionHistory.Add("+£" +transaction);
+            return accounts;
         }
 
         private static string[] ReadFiles()
         {
             string[] lines = System.IO.File.ReadAllLines(@"C:\Work\Training\Transactions2014.txt");
+            return lines;
             //string[] lines2 = System.IO.File.ReadAllLines(@"C:\Work\Training\DodgyTransactions2015.txt");
             //string[] allTransactions = new string[lines.Length + lines2.Length];
             //lines.CopyTo(allTransactions, 0);
             //lines2.CopyTo(allTransactions, lines.Length);
             //return allTransactions;
-            return lines;
         }
 
-        private static void MakePayment(string payer, string payee, string amount)
+        private static Dictionary<string,Account> MakePayment(Dictionary<string,Account> accounts, string payer, string payee, string amount)
         {
             double amountD = double.Parse(amount);
-            CheckAdded(payer);
-            CheckAdded(payee);
-            Globals.accounts[payer] -= amountD;
-            Globals.accounts[payee] += amountD;
+            accounts = CheckAdded(accounts, payer);
+            accounts = CheckAdded(accounts, payee);
+            accounts[payer].amount -= amountD;
+            accounts[payee].amount += amountD;
+            return accounts;
         }
 
-        private static void CheckAdded(string name)
+        private static Dictionary<string, Account> CheckAdded(Dictionary<string,Account> accounts, string name)
         {
-            double value;
-            if (!Globals.accounts.TryGetValue(name, out value))
+            Account value;
+            if (!accounts.TryGetValue(name, out value))
             {
-                Globals.accounts[name] = 0;
+                Account temp = new Account();
+                accounts[name] = temp;
+                accounts[name].amount = 0;
+                List<string> temp2 = new List<string>();
+                accounts[name].transactionHistory = temp2;
             }
+
+            return accounts;
         }
     }
 }
