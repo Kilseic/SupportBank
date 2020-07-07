@@ -28,7 +28,15 @@ namespace SupportBank
                     Console.WriteLine(name + ": £" + accounts[name].amount);
                     foreach (Transaction i in accounts[name].transactionHistory)
                     {
-                        Console.WriteLine(i.ToString());
+                        if (name == i.FromAccount)
+                        {
+                            Console.WriteLine("-£" + i.ToString());
+                        }
+                        else
+                        {
+                            Console.WriteLine("+£" + i.ToString());
+                        }
+                        
                     }
                 }
                 else

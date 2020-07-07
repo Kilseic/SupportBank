@@ -43,7 +43,6 @@ namespace SupportBank
             foreach (string i in names)
             {
                 Transaction temp = line;
-                temp.alpha = i;
                 accounts[i].transactionHistory.Add(temp);
             }
             return accounts;
