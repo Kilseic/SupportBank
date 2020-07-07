@@ -4,3 +4,6 @@ C:\Work\Training\SupportBank\SupportBank\SupportBank\obj\Debug\SupportBank.cspro
 C:\Work\Training\SupportBank\SupportBank\SupportBank\obj\Debug\SupportBank.csproj.CoreCompileInputs.cache
 C:\Work\Training\SupportBank\SupportBank\SupportBank\obj\Debug\SupportBank.exe
 C:\Work\Training\SupportBank\SupportBank\SupportBank\obj\Debug\SupportBank.pdb
+C:\Work\Training\SupportBank\SupportBank\SupportBank\bin\Debug\NLog.dll
+C:\Work\Training\SupportBank\SupportBank\SupportBank\bin\Debug\NLog.xml
+C:\Work\Training\SupportBank\SupportBank\SupportBank\obj\Debug\SupportBank.csproj.CopyComplete
