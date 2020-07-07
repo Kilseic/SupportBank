@@ -7,3 +7,5 @@ C:\Work\Training\SupportBank\SupportBank\SupportBank\obj\Debug\SupportBank.pdb
 C:\Work\Training\SupportBank\SupportBank\SupportBank\bin\Debug\NLog.dll
 C:\Work\Training\SupportBank\SupportBank\SupportBank\bin\Debug\NLog.xml
 C:\Work\Training\SupportBank\SupportBank\SupportBank\obj\Debug\SupportBank.csproj.CopyComplete
+C:\Work\Training\SupportBank\SupportBank\SupportBank\bin\Debug\Newtonsoft.Json.dll
+C:\Work\Training\SupportBank\SupportBank\SupportBank\bin\Debug\Newtonsoft.Json.xml

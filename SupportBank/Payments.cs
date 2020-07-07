@@ -7,21 +7,22 @@ namespace SupportBank
     class Payments
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
-        public static Dictionary<string,Account> MakeAllPayments(string[] input, Dictionary<string,Account> accounts)
+        public static Dictionary<string,Account> MakeAllPayments(List<Transaction> input, Dictionary<string,
+            Account> accounts)
         {
-            for (int i = 1; i < input.Length; i++)
+            for (int i = 1; i < input.Count; i++)
             {
-                string[] line = input[i].Split(',');
                 DateTime date;
-                if (!DateTime.TryParse(line[0], out date))
+                if (!DateTime.TryParse(input[i].Date, out date))
                 {
                     logger.Info("Found invalid date on line " + (i+1));
                     continue;
                 }
                 try
                 {
-                    accounts = MakePayment(accounts, line[1], line[2], line[4]);
-                    accounts = SavePayment(accounts,line[1], line[2], line);
+                    accounts = MakePayment(accounts, input[i].FromAccount, input[i].ToAccount,
+                        input[i].Amount);
+                    accounts = SavePayment(accounts,input[i].FromAccount, input[i].ToAccount, input[i]);
                 }
                 catch (Exception ex)
                 {
@@ -34,20 +35,15 @@ namespace SupportBank
         }
 
         private static Dictionary<string, Account> SavePayment(Dictionary<string, Account> accounts,string person1, 
-            string person2, string[] line)
+            string person2, Transaction line)
         {
             accounts = CheckAdded(accounts, person1);
             accounts = CheckAdded(accounts, person2);
             string[] names = {person1, person2};
             foreach (string i in names)
             {
-                Transaction temp = new Transaction();
+                Transaction temp = line;
                 temp.alpha = i;
-                temp.date = line[0];
-                temp.from = line[1];
-                temp.to = line[2];
-                temp.reference = line[3];
-                temp.amount = line[4];
                 accounts[i].transactionHistory.Add(temp);
             }
             return accounts;

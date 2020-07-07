@@ -3,20 +3,20 @@
     public class Transaction
     {
         public string alpha;
-        public string date;
-        public string amount;
-        public string to;
-        public string from;
-        public string reference;
+        public string Date;
+        public string Amount;
+        public string ToAccount;
+        public string FromAccount;
+        public string Narrative;
         public override string ToString()
         {
-            if (alpha == to)
+            if (alpha == ToAccount)
             {
-                return ("+£" + $"{amount:#0.00}" + ". Date: " + date + ". Reference: " + reference);
+                return ("+£" + $"{Amount:#0.00}" + ". Date: " + Date + ". Reference: " + Narrative);
             }
             else
             {
-                return ("-£" + $"{amount:#0.00}" +". Date: " + date + ". Reference: " +reference);
+                return ("-£" + $"{Amount:#0.00}" +". Date: " + Date + ". Reference: " +Narrative);
             }
         }
     }
