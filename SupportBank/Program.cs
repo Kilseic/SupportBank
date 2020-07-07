@@ -5,33 +5,39 @@ namespace SupportBank
 {
     public static class Globals
     {
-        public static List<string> accountNames = new List<string>(); 
-        public static List<double> accountValue = new List<double>();
+        public static Dictionary<string,double> accounts = new Dictionary<string, double>();
     }
     internal class Program
     {
         public static void Main(string[] args)
         {
-            string[] lines = System.IO.File.ReadAllLines(@"C:\Work\Training\Transactions2014.txt");
-            for (int i = 1; i < lines.Length-1; i++)
-            {
-                string[] line = lines[i].Split(',');
-                makePayment(line[1], line[2], double.Parse(line[4]));
-            }
-            Console.WriteLine("Please enter a command.");
-            string command = Console.ReadLine();
+            string[] lines = ReadFiles();
+            MakeAllPayments(lines);
+            string command = UserInput("Please enter a command.");
+            ExecuteCommand(command);
+        }
+
+        private static string UserInput(string question)
+        {
+            Console.WriteLine(question);
+            return Console.ReadLine();
+        }
+
+        private static void ExecuteCommand(string command)
+        {
             if (command == "List All")
             {
-                foreach (string name in Globals.accountNames)
+                foreach (KeyValuePair<string,double> kvp in Globals.accounts)
                 {
-                    Console.WriteLine(name + ": £" + Globals.accountValue[Globals.accountNames.IndexOf(name)]);
+                    Console.WriteLine(kvp.Key + ": £" + kvp.Value);
                 }
             } else if (command.Substring(0, 5) == "List ")
             {
                 string name = command.Substring(5, command.Length - 5);
-                if (Globals.accountNames.Contains(name))
+                double value;
+                if (Globals.accounts.TryGetValue(name, out value))
                 {
-                    Console.WriteLine(name + ": £" + Globals.accountValue[Globals.accountNames.IndexOf(name)]);
+                    Console.WriteLine(name + ": £" + Globals.accounts[name]);
                 }
                 else
                 {
@@ -40,24 +46,45 @@ namespace SupportBank
             }
             else
             {
-                 Console.WriteLine("Invalid command");
+                Console.WriteLine("Invalid command");
             }
         }
 
-        private static void makePayment(string payer, string payee, double amount)
+        private static void MakeAllPayments(string[] input)
         {
-            checkAdded(payer);
-            checkAdded(payee);
-            Globals.accountValue[Globals.accountNames.IndexOf(payer)] -= amount;
-            Globals.accountValue[Globals.accountNames.IndexOf(payee)] += amount;
+            for (int i = 1; i < input.Length-1; i++)
+            {
+                string[] line = input[i].Split(',');
+                MakePayment(line[1], line[2], line[4]);
+            }
         }
 
-        private static void checkAdded(string name)
+        private static string[] ReadFiles()
         {
-            if (!Globals.accountNames.Contains(name))
+            string[] lines = System.IO.File.ReadAllLines(@"C:\Work\Training\Transactions2014.txt");
+            //string[] lines2 = System.IO.File.ReadAllLines(@"C:\Work\Training\DodgyTransactions2015.txt");
+            //string[] allTransactions = new string[lines.Length + lines2.Length];
+            //lines.CopyTo(allTransactions, 0);
+            //lines2.CopyTo(allTransactions, lines.Length);
+            //return allTransactions;
+            return lines;
+        }
+
+        private static void MakePayment(string payer, string payee, string amount)
+        {
+            double amountD = double.Parse(amount);
+            CheckAdded(payer);
+            CheckAdded(payee);
+            Globals.accounts[payer] -= amountD;
+            Globals.accounts[payee] += amountD;
+        }
+
+        private static void CheckAdded(string name)
+        {
+            double value;
+            if (!Globals.accounts.TryGetValue(name, out value))
             {
-                Globals.accountNames.Add(name);
-                Globals.accountValue.Add(0);
+                Globals.accounts[name] = 0;
             }
         }
     }
