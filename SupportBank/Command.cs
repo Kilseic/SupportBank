@@ -6,7 +6,7 @@ namespace SupportBank
 {
     public class Command
     {
-        public static void ExecuteCommand(string command, string[] lines, Dictionary<string, Account> accounts)
+        public static void ExecuteCommand(string command, Dictionary<string, Account> accounts)
         {
             if (command == "List All")
             {
@@ -22,9 +22,9 @@ namespace SupportBank
                 if (accounts.TryGetValue(name, out value))
                 {
                     Console.WriteLine(name + ": £" + accounts[name].amount);
-                    foreach (string i in accounts[name].transactionHistory)
+                    foreach (Transaction i in accounts[name].transactionHistory)
                     {
-                        Console.WriteLine(i);
+                        Console.WriteLine(i.ToString());
                     }
                 }
                 else

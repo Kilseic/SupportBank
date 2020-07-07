@@ -15,19 +15,25 @@ namespace SupportBank
             return accounts;
         }
 
-        private static string CreateTransaction(string[] line)
+        private static Dictionary<string, Account> LogPayment(Dictionary<string, Account> accounts,string person1, 
+            string person2, string[] line)
         {
-            return (line[4] +". Date: " + line[0] + ". Reference: " +line[3]);
-        }
-
-        private static Dictionary<string, Account> LogPayment(Dictionary<string, Account> accounts,string person1, string person2, string[] line)
-        {
-            string transaction = CreateTransaction(line);
-            accounts[person1].transactionHistory.Add("-£" +transaction);
-            accounts[person2].transactionHistory.Add("+£" +transaction);
+            string[] names = {person1, person2};
+            foreach (string i in names)
+            {
+                Transaction temp = new Transaction();
+                temp.alpha = i;
+                temp.date = line[0];
+                temp.from = line[1];
+                temp.to = line[2];
+                temp.reference = line[3];
+                temp.amount = line[4];
+                accounts[i].transactionHistory.Add(temp);
+            }
             return accounts;
         }
-        private static Dictionary<string,Account> MakePayment(Dictionary<string,Account> accounts, string payer, string payee, string amount)
+        private static Dictionary<string,Account> MakePayment(Dictionary<string,Account> accounts, string payer, 
+            string payee, string amount)
         {
             double amountD = double.Parse(amount);
             accounts = CheckAdded(accounts, payer);
@@ -45,7 +51,7 @@ namespace SupportBank
                 Account temp = new Account();
                 accounts[name] = temp;
                 accounts[name].amount = 0;
-                List<string> temp2 = new List<string>();
+                List<Transaction> temp2 = new List<Transaction>();
                 accounts[name].transactionHistory = temp2;
             }
 

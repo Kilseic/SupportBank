@@ -6,8 +6,7 @@ namespace SupportBank
     public class Account
     {
         public double amount;
-        public List<string> transactionHistory;
-
+        public List<Transaction> transactionHistory;
     }
 
     internal class Program
@@ -18,7 +17,7 @@ namespace SupportBank
             string[] lines = ReadFiles();
             accounts = Payments.MakeAllPayments(lines, accounts);
             string command = UserInput("Please enter a command:");
-            Command.ExecuteCommand(command, lines, accounts);
+            Command.ExecuteCommand(command, accounts);
         }
 
         private static string UserInput(string question)
