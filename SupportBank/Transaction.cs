@@ -12,11 +12,11 @@
         {
             if (alpha == to)
             {
-                return ("+£" +amount +". Date: " + date + ". Reference: " +reference);
+                return ("+£" + $"{amount:#0.00}" + ". Date: " + date + ". Reference: " + reference);
             }
             else
             {
-                return ("-£" + amount +". Date: " + date + ". Reference: " +reference);
+                return ("-£" + $"{amount:#0.00}" +". Date: " + date + ". Reference: " +reference);
             }
         }
     }

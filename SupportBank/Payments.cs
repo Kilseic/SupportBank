@@ -19,15 +19,14 @@ namespace SupportBank
                 try
                 {
                     accounts = MakePayment(accounts, line[1], line[2], line[4]);
+                    accounts = SavePayment(accounts,line[1], line[2], line);
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message + " Error occurred reading data on line " + (i+1) +".");
                     logger.Debug(ex, ex.Message + "This was on line " + (i+1));
-                    throw new Exception();
+                    //throw ex;
                 }
-
-                accounts = SavePayment(accounts,line[1], line[2], line);
             }
             return accounts;
         }
@@ -57,8 +56,8 @@ namespace SupportBank
             double amountD = double.Parse(amount);
             accounts = CheckAdded(accounts, payer);
             accounts = CheckAdded(accounts, payee);
-            accounts[payer].amount -= amountD;
-            accounts[payee].amount += amountD;
+            accounts[payer].amount = Math.Round(accounts[payer].amount - amountD, 2);
+            accounts[payee].amount = Math.Round(accounts[payee].amount + amountD, 2);
             return accounts;
         }
 

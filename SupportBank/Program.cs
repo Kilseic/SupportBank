@@ -17,23 +17,29 @@ namespace SupportBank
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
         public static void Main(string[] args)
         {
-            startLogging();
+            StartLogging();
             Dictionary<string, Account> accounts = new Dictionary<string, Account>();
             string[] lines = ReadFiles();
             try
             {
                 accounts = Payments.MakeAllPayments(lines, accounts);
-                string command = UserInput("Please enter a command:");
-                Command.ExecuteCommand(command, accounts);
+                while (true)
+                {
+                    string command = UserInput("Please enter a command: (or Exit)");
+                    if (command == "Exit")
+                    {
+                        break;
+                    }
+                    Command.ExecuteCommand(command, accounts);
+                }
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Program stopped, invalid data imported.");
             }
-            
         }
 
-        private static void startLogging()
+        private static void StartLogging()
         {
             var config = new LoggingConfiguration();
             var target = new FileTarget { FileName = @"C:\Work\Logs\SupportBank.log", Layout = @"${longdate} ${level} - ${logger}: ${message}" };
