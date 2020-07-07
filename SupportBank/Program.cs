@@ -50,12 +50,14 @@ namespace SupportBank
 
         private static string UserInput(string question)
         {
+            logger.Info("Asking for input.");
             Console.WriteLine(question);
             return Console.ReadLine();
         }
 
         private static string[] ReadFiles()
         {
+            logger.Info("Started reading files.");
             string[] lines = System.IO.File.ReadAllLines(@"C:\Work\Training\Transactions2014.txt");
             string[] lines2 = System.IO.File.ReadAllLines(@"C:\Work\Training\DodgyTransactions2015.txt");
             string[] allTransactions = new string[lines.Length + lines2.Length];

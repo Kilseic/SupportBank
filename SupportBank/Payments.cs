@@ -11,9 +11,12 @@ namespace SupportBank
         {
             for (int i = 1; i < input.Length-1; i++)
             {
+                logger.Info("Starting split");
                 string[] line = input[i].Split(',');
-                if (line[0] == "Date")
+                DateTime date;
+                if (!DateTime.TryParse(line[0], out date))
                 {
+                    logger.Info("Found invalid date on line " + (i+1));
                     continue;
                 }
                 try
@@ -23,7 +26,7 @@ namespace SupportBank
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message + " Error occurred reading data on line " + (i+1) +".");
+                    Console.WriteLine(ex.Message + " This was on line " + (i+1) +".");
                     logger.Debug(ex, ex.Message + "This was on line " + (i+1));
                     //throw ex;
                 }
@@ -53,18 +56,20 @@ namespace SupportBank
         private static Dictionary<string,Account> MakePayment(Dictionary<string,Account> accounts, string payer, 
             string payee, string amount)
         {
-            double amountD = double.Parse(amount);
-            accounts = CheckAdded(accounts, payer);
-            accounts = CheckAdded(accounts, payee);
-            accounts[payer].amount = Math.Round(accounts[payer].amount - amountD, 2);
-            accounts[payee].amount = Math.Round(accounts[payee].amount + amountD, 2);
-            return accounts;
+            if (double.TryParse(amount, out double amountD))
+            {
+                accounts = CheckAdded(accounts, payer);
+                accounts = CheckAdded(accounts, payee);
+                accounts[payer].amount = Math.Round(accounts[payer].amount - amountD, 2);
+                accounts[payee].amount = Math.Round(accounts[payee].amount + amountD, 2);
+                return accounts;
+            }
+            throw new Exception("Cost not valid number. ");
         }
 
         private static Dictionary<string, Account> CheckAdded(Dictionary<string,Account> accounts, string name)
         {
-            Account value;
-            if (!accounts.TryGetValue(name, out value))
+            if (!accounts.TryGetValue(name, out Account value))
             {
                 Account temp = new Account();
                 accounts[name] = temp;
