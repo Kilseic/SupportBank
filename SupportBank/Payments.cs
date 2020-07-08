@@ -18,12 +18,6 @@ namespace SupportBank
         {
             for (int i = 1; i < input.Count; i++)
             {
-                DateTime date;
-                if (!DateTime.TryParse(input[i].Date, out date))
-                {
-                    logger.Info("Found invalid date on line " + (i+1));
-                    continue;
-                }
                 MakePayment(input[i].FromAccount, input[i].ToAccount,
                     input[i].Amount);
                 SavePayment(input[i].FromAccount, input[i].ToAccount, input[i]);
@@ -41,16 +35,13 @@ namespace SupportBank
                 Accounts[i].TransactionHistory.Add(temp);
             }
         }
-        
-        private void MakePayment(string payer, string payee, string amount)
+
+        private void MakePayment(string payer, string payee, double amount)
         {
-            if (double.TryParse(amount, out double amountD))
-            {
-                CheckAdded(payer);
-                CheckAdded(payee);
-                Accounts[payer].Balance = Math.Round(Accounts[payer].Balance - amountD, 2);
-                Accounts[payee].Balance = Math.Round(Accounts[payee].Balance + amountD, 2);
-            }
+            CheckAdded(payer);
+            CheckAdded(payee);
+            Accounts[payer].Balance = Math.Round(Accounts[payer].Balance - amount, 2);
+            Accounts[payee].Balance = Math.Round(Accounts[payee].Balance + amount, 2);
         }
 
         private void CheckAdded(string name)

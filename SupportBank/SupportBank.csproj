@@ -55,6 +55,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ReadFiles.cs" />
+    <Compile Include="UserInteraction.cs" />
     <Compile Include="Transaction.cs" />
   </ItemGroup>
   <ItemGroup>

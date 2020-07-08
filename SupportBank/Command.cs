@@ -7,28 +7,28 @@ namespace SupportBank
 {
     public class Command
     {
+        private Payments Bank = new Payments();
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
-        public static Payments ExecuteCommand(string command, Payments accounts)
+        public void ExecuteCommand(string command)
         {
             logger.Debug("Got this command from user: "+ command);
             if (command == "List All")
             {
                 logger.Info("Listing all accounts and amounts.");
-                foreach (KeyValuePair<string, Account> kvp in accounts.Accounts)
+                foreach (KeyValuePair<string, Account> kvp in Bank.Accounts)
                 {
                     Console.WriteLine(kvp.Key + ": £" + kvp.Value.Balance);
                 }
-                return accounts;
             }
-            if (command.Substring(0, 5) == "List ")
+            else if (command.Substring(0, 5) == "List ")
             {
                 string name = command.Substring(5, command.Length - 5);
                 logger.Info("Listing all transactions for "+ name +".");
                 Account value;
-                if (accounts.Accounts.TryGetValue(name, out value))
+                if (Bank.Accounts.TryGetValue(name, out value))
                 {
-                    Console.WriteLine(name + ": £" + accounts.Accounts[name].Balance);
-                    foreach (Transaction i in accounts.Accounts[name].TransactionHistory)
+                    Console.WriteLine(name + ": £" + Bank.Accounts[name].Balance);
+                    foreach (Transaction i in Bank.Accounts[name].TransactionHistory)
                     {
                         if (name == i.FromAccount)
                         {
@@ -39,30 +39,45 @@ namespace SupportBank
                             Console.WriteLine("+£" + i.ToString());
                         }
                     }
-                    return accounts;
                 }
-                Console.WriteLine("This person does not have an account.");
-                return accounts;
-                
+                else
+                {
+                    Console.WriteLine("This person does not have an account.");
+                }
             }
-            if (command.Substring(0,12) == "Import File ")
+            else if (command.Substring(0,12) == "Import File ")
             {
                 string fileName = command.Substring(12, command.Length - 12);
                 List<Transaction> newPayments = ReadFiles.ImportFile(fileName);
-                bool test = ReadFiles.CheckData(newPayments);
-                if (test == false)
+                string answer = UserInteraction.UserInput("Would you like to import all valid data? Y/N");
+                if (answer == "Y")
                 {
-                    string answer = Program.UserInput("Would you like to import all valid data? Y/N");
-                    if (answer == "Y")
-                    {
-                        accounts.MakeAllPayments(newPayments);
-                    }
+                    Bank.MakeAllPayments(newPayments);
+                    Console.WriteLine("Data Imported.");
                 }
-                Console.WriteLine("Data Imported.");
-                return accounts;
             }
-            Console.WriteLine("Invalid command");
-            return accounts;
+            else
+            {
+                Console.WriteLine("Invalid command. ");
+            }
+        }
+        public void ImportTestData()
+        {
+            List<List<Transaction>> files = new List<List<Transaction>>();
+            files.Add(ReadFiles.ImportFile(@"C:\Work\Training\Transactions2014.txt"));
+            files.Add(ReadFiles.ImportFile(@"C:\Work\Training\DodgyTransactions2015.txt"));
+            files.Add(ReadFiles.ImportFile(@"C:\Work\Training\Transactions2013.json"));
+            foreach (var file in files)
+            {
+                try
+                {
+                    Bank.MakeAllPayments(file);
+                }
+                catch
+                {
+                    logger.Debug("Error importing test data.");
+                }
+            }
         }
     }
 }

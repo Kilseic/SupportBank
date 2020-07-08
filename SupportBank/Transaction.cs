@@ -1,11 +1,12 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace SupportBank
 {
     public class Transaction
     {
-        public string Date;
-        public string Amount;
+        public DateTime Date;
+        public double Amount;
         public string ToAccount;
         public string FromAccount;
         public string Narrative;

@@ -9,39 +9,14 @@ using NLog.Targets;
 
 namespace SupportBank
 {
-    interface IUserInteraction
-    {
-        Dictionary<string, Account> Accounts { get; set; }
-    }
+   
     internal class Program
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
         public static void Main(string[] args)
         {
             StartLogging();
-            Payments accounts = new Payments();
-            string wantData = UserInput("Do you want to import the test data? Y/N");
-            if (wantData == "Y")
-            {
-                accounts = ImportTestData(accounts);
-            }
-            while (true)
-            {
-                string command = UserInput("Please enter a command: (or Exit)");
-                if (command == "Exit")
-                {
-                    break;
-                }
-                try
-                {
-                    accounts = Command.ExecuteCommand(command, accounts);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Error executing command, refer to log files for details.");
-                    logger.Debug("Error executing command. " + ex.Message);
-                }
-            }
+            UserInteraction.Start();
         }
 
         private static void StartLogging()
@@ -53,32 +28,6 @@ namespace SupportBank
             config.LoggingRules.Add(new LoggingRule("*", LogLevel.Debug, target));
             LogManager.Configuration = config;
         }
-
-        public static string UserInput(string question)
-        {
-            logger.Info("Asking for input.");
-            Console.WriteLine(question);
-            return Console.ReadLine();
-        }
         
-        public static Payments ImportTestData(Payments accounts)
-        {
-            List<List<Transaction>> files = new List<List<Transaction>>();
-            files.Add(ReadFiles.ImportFile(@"C:\Work\Training\Transactions2014.txt"));
-            files.Add(ReadFiles.ImportFile(@"C:\Work\Training\DodgyTransactions2015.txt"));
-            files.Add(ReadFiles.ImportFile(@"C:\Work\Training\Transactions2013.json"));
-            foreach (var file in files)
-            {
-                try
-                {
-                    accounts.MakeAllPayments(file);
-                }
-                catch
-                {
-                    logger.Debug("Error importing test data.");
-                }
-            }
-            return accounts;
-        }
     }
 }

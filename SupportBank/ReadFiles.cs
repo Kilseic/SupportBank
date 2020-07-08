@@ -37,19 +37,21 @@ namespace SupportBank
             for (int i = 1; i < input.Length; i++)
             {
                 string[] line = input[i].Split(',');
-                DateTime date;
-                if (!DateTime.TryParse(line[0], out date))
-                {
-                    logger.Info("Found invalid date on line " + (i+1) + " in CSV");
-                    continue;
-                }
                 Transaction temp = new Transaction();
-                temp.Date = line[0];
-                temp.FromAccount = line[1];
-                temp.ToAccount = line[2];
-                temp.Narrative = line[3];
-                temp.Amount = line[4];
-                output.Add(temp);
+                try
+                {
+                    temp.Date = Convert.ToDateTime(line[0]);
+                    temp.FromAccount = line[1];
+                    temp.ToAccount = line[2];
+                    temp.Narrative = line[3];
+                    temp.Amount = Convert.ToDouble(line[4]);
+                    output.Add(temp);
+                }
+                catch
+                {
+                    logger.Debug("Invalid date/amount found on line " + i+1);
+                    Console.WriteLine("Invalid date/amount found on line " + i+1);
+                }
             }
 
             return output;
@@ -63,28 +65,6 @@ namespace SupportBank
                 List<Transaction> items = JsonConvert.DeserializeObject<List<Transaction>>(json);
                 return items;
             }
-        }
-
-        public static bool CheckData(List<Transaction> input)
-        {
-            bool output = true;
-            for (int i = 1; i < input.Count; i++)
-            {
-                if (!DateTime.TryParse(input[i].Date, out DateTime date))
-                {
-                    logger.Info("Found invalid date on line " + (i+1));
-                    Console.WriteLine("Found invalid date on line " + (i+1));
-                    output = false;
-                    continue;
-                }
-                if (!double.TryParse(input[i].Amount, out double amountD))
-                {
-                    logger.Info("Found invalid amount on line " + (i+1));
-                    Console.WriteLine("Found invalid amount on line " + (i+1));
-                    output = false;
-                }
-            }
-            return output;
         }
     }
 }
