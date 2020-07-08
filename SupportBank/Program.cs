@@ -12,7 +12,6 @@ namespace SupportBank
    
     internal class Program
     {
-        private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
         public static void Main(string[] args)
         {
             StartLogging();

@@ -12,7 +12,7 @@ namespace SupportBank
         public string Narrative;
         public override string ToString()
         {
-            return ($"{Amount:#0.00}" + ". Date: " + Date + ". Reference: " + Narrative);
+            return ($"{Amount:####0.00}" + ". Date: " + $"{Date:d}" + ". Reference: " + Narrative);
         }
     }
 }

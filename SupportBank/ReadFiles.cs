@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml;
 using Newtonsoft.Json;
 using NLog;
 
@@ -18,16 +19,74 @@ namespace SupportBank
             {
                 return LoadJson(filename);
             }
+            else if (Path.GetExtension(filename) == ".xml")
+            {
+                return LoadXml(filename);
+            }
             else
             {
                 return ReadCsv(filename);
             }
         }
-        public static List<Transaction> ReadCsv(string filename)
+        private static List<Transaction> ReadCsv(string filename)
         {
             logger.Info("Started reading files.");
             string[] lines = System.IO.File.ReadAllLines(@filename);
             List<Transaction> output = MakeListTransactions(lines);
+            return output;
+        }
+
+        private static List<Transaction> LoadXml(string filename)
+        {
+            List<Transaction> output = new List<Transaction>();
+            XmlDocument doc = new XmlDocument();
+            doc.Load(filename);
+            foreach (XmlNode node in doc.DocumentElement)
+            {
+                Transaction temp = new Transaction();
+                double dateCode = double.Parse(node.Attributes[0].InnerText);
+                temp.Date = DateTime.FromOADate(dateCode);
+                foreach (XmlNode child in node.ChildNodes)
+                {
+                    switch (child.Name)
+                    {
+                        case "Description":
+                        {
+                            temp.Narrative = child.InnerText;
+                            break;
+                        }
+                        case "Value":
+                        {
+                            if (Double.TryParse(child.InnerText, out double amount))
+                            {
+                                temp.Amount = amount;
+                            }
+                            else
+                            {
+                                temp.Amount = 0;
+                            }
+                            break;
+                        }
+                        case "Parties":
+                        {
+                            foreach (XmlNode childDeep in child.ChildNodes)
+                            {
+                                if (childDeep.Name == "To")
+                                {
+                                    temp.ToAccount = childDeep.InnerText;
+                                }
+                                else
+                                {
+                                    temp.FromAccount = childDeep.InnerText;
+                                }
+                            }
+
+                            break;
+                        }
+                    }
+                }
+                output.Add(temp);
+            }
             return output;
         }
 
