@@ -48,41 +48,50 @@ namespace SupportBank
                 temp.Date = DateTime.FromOADate(dateCode);
                 foreach (XmlNode child in node.ChildNodes)
                 {
-                    switch (child.Name)
+                    try
                     {
-                        case "Description":
+                        switch (child.Name)
                         {
-                            temp.Narrative = child.InnerText;
-                            break;
-                        }
-                        case "Value":
-                        {
-                            if (Double.TryParse(child.InnerText, out double amount))
+                            case "Description":
                             {
-                                temp.Amount = amount;
+                                temp.Narrative = child.InnerText;
+                                break;
                             }
-                            else
+                            case "Value":
                             {
-                                temp.Amount = 0;
-                            }
-                            break;
-                        }
-                        case "Parties":
-                        {
-                            foreach (XmlNode childDeep in child.ChildNodes)
-                            {
-                                if (childDeep.Name == "To")
+                                if (Double.TryParse(child.InnerText, out double amount))
                                 {
-                                    temp.ToAccount = childDeep.InnerText;
+                                    temp.Amount = amount;
                                 }
                                 else
                                 {
-                                    temp.FromAccount = childDeep.InnerText;
+                                    temp.Amount = 0;
                                 }
-                            }
 
-                            break;
+                                break;
+                            }
+                            case "Parties":
+                            {
+                                foreach (XmlNode childDeep in child.ChildNodes)
+                                {
+                                    if (childDeep.Name == "To")
+                                    {
+                                        temp.ToAccount = childDeep.InnerText;
+                                    }
+                                    else
+                                    {
+                                        temp.FromAccount = childDeep.InnerText;
+                                    }
+                                }
+
+                                break;
+                            }
                         }
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Debug(ex.Message + " Erorr in data found in Xml.");
+                        Console.WriteLine("Invalid data found. ");
                     }
                 }
                 output.Add(temp);
