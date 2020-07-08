@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Newtonsoft.Json;
 using NLog;
 
@@ -9,15 +10,24 @@ namespace SupportBank
     class ReadFiles
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
-        public static List<Transaction> ReadCsv()
+
+        public static List<Transaction> ImportFile(string filename)
+        {
+            logger.Debug("Trying to import data from "+ filename);
+            if (Path.GetExtension(filename) == ".json")
+            {
+                return LoadJson(filename);
+            }
+            else
+            {
+                return ReadCsv(filename);
+            }
+        }
+        public static List<Transaction> ReadCsv(string filename)
         {
             logger.Info("Started reading files.");
-            string[] lines = System.IO.File.ReadAllLines(@"C:\Work\Training\Transactions2014.txt");
-            string[] lines2 = System.IO.File.ReadAllLines(@"C:\Work\Training\DodgyTransactions2015.txt");
-            string[] allTransactions = new string[lines.Length + lines2.Length];
-            lines.CopyTo(allTransactions, 0);
-            lines2.CopyTo(allTransactions, lines.Length);
-            List<Transaction> output = MakeListTransactions(allTransactions);
+            string[] lines = System.IO.File.ReadAllLines(@filename);
+            List<Transaction> output = MakeListTransactions(lines);
             return output;
         }
 
@@ -45,14 +55,24 @@ namespace SupportBank
             return output;
         }
         
-        public static List<Transaction> LoadJson()
+        public static List<Transaction> LoadJson(string filename)
         {
-            using (StreamReader r = new StreamReader(@"C:\Work\Training\Transactions2013.json"))
+            using (StreamReader r = new StreamReader(@filename))
             {
                 string json = r.ReadToEnd();
                 List<Transaction> items = JsonConvert.DeserializeObject<List<Transaction>>(json);
                 return items;
             }
+        }
+        
+        public static List<Transaction> ImportTestData()
+        {
+            List<Transaction> fromCsv1 = ReadFiles.ImportFile(@"C:\Work\Training\Transactions2014.txt");
+            List<Transaction> fromCsv2 = ReadFiles.ImportFile(@"C:\Work\Training\DodgyTransactions2015.txt");
+            List<Transaction> fromJson = ReadFiles.ImportFile(@"C:\Work\Training\Transactions2013.json");
+            List<Transaction> lines = fromCsv1.Concat(fromCsv2).ToList();
+            List<Transaction> output = lines.Concat(fromJson).ToList();
+            return output;
         }
     }
 }

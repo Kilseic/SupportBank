@@ -16,12 +16,14 @@ namespace SupportBank
         {
             StartLogging();
             Dictionary<string, Account> accounts = new Dictionary<string, Account>();
-            List<Transaction> fromCsv = ReadFiles.ReadCsv();
-            List<Transaction> fromJson = ReadFiles.LoadJson();
-            List<Transaction> lines = fromCsv.Concat(fromJson).ToList();
+            string wantData = UserInput("Do you want to import the test data? Y/N");
+            if (wantData == "Y")
+            {
+                List<Transaction> testDataTransactions = ReadFiles.ImportTestData();
+                accounts = Payments.MakeAllPayments(testDataTransactions, accounts);
+            }
             try
             {
-                accounts = Payments.MakeAllPayments(lines, accounts);
                 while (true)
                 {
                     string command = UserInput("Please enter a command: (or Exit)");
@@ -29,10 +31,10 @@ namespace SupportBank
                     {
                         break;
                     }
-                    Command.ExecuteCommand(command, accounts);
+                    accounts = Command.ExecuteCommand(command, accounts);
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 Console.WriteLine("Program stopped, invalid data imported.");
             }

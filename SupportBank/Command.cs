@@ -8,8 +8,9 @@ namespace SupportBank
     public class Command
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
-        public static void ExecuteCommand(string command, Dictionary<string, Account> accounts)
+        public static Dictionary<string, Account> ExecuteCommand(string command, Dictionary<string, Account> accounts)
         {
+            logger.Debug("Got this command from user: "+ command);
             if (command == "List All")
             {
                 logger.Info("Listing all accounts and amounts.");
@@ -17,8 +18,9 @@ namespace SupportBank
                 {
                     Console.WriteLine(kvp.Key + ": £" + kvp.Value.amount);
                 }
+                return accounts;
             }
-            else if (command.Substring(0, 5) == "List ")
+            if (command.Substring(0, 5) == "List ")
             {
                 string name = command.Substring(5, command.Length - 5);
                 logger.Info("Listing all transactions for "+ name +".");
@@ -36,18 +38,23 @@ namespace SupportBank
                         {
                             Console.WriteLine("+£" + i.ToString());
                         }
-                        
                     }
+                    return accounts;
                 }
-                else
-                {
-                    Console.WriteLine("This person does not have an account.");
-                }
+                Console.WriteLine("This person does not have an account.");
+                return accounts;
+                
             }
-            else
+            if (command.Substring(0,12) == "Import File ")
             {
-                Console.WriteLine("Invalid command");
+                string fileName = command.Substring(12, command.Length - 12);
+                List<Transaction> newPayments = ReadFiles.ImportFile(fileName);
+                accounts = Payments.MakeAllPayments(newPayments, accounts);
+                Console.WriteLine("Data Imported.");
+                return accounts;
             }
+            Console.WriteLine("Invalid command");
+            return accounts;
         }
     }
 }
