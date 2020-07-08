@@ -49,7 +49,15 @@ namespace SupportBank
             {
                 string fileName = command.Substring(12, command.Length - 12);
                 List<Transaction> newPayments = ReadFiles.ImportFile(fileName);
-                accounts = Payments.MakeAllPayments(newPayments, accounts);
+                bool test = ReadFiles.CheckData(newPayments);
+                if (test == false)
+                {
+                    string answer = Program.UserInput("Would you like to import all valid data? Y/N");
+                    if (answer == "Y")
+                    {
+                        accounts = Payments.MakeAllPayments(newPayments, accounts);
+                    }
+                }
                 Console.WriteLine("Data Imported.");
                 return accounts;
             }

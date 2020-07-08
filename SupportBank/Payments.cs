@@ -18,18 +18,9 @@ namespace SupportBank
                     logger.Info("Found invalid date on line " + (i+1));
                     continue;
                 }
-                try
-                {
-                    accounts = MakePayment(accounts, input[i].FromAccount, input[i].ToAccount,
-                        input[i].Amount);
-                    accounts = SavePayment(accounts,input[i].FromAccount, input[i].ToAccount, input[i]);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message + " This was on line " + (i+1) +".");
-                    logger.Debug(ex, ex.Message + "This was on line " + (i+1));
-                    //throw ex;
-                }
+                accounts = MakePayment(accounts, input[i].FromAccount, input[i].ToAccount,
+                    input[i].Amount);
+                accounts = SavePayment(accounts,input[i].FromAccount, input[i].ToAccount, input[i]);
             }
             return accounts;
         }
@@ -59,7 +50,7 @@ namespace SupportBank
                 accounts[payee].amount = Math.Round(accounts[payee].amount + amountD, 2);
                 return accounts;
             }
-            throw new Exception("Cost not valid number. ");
+            return accounts;
         }
 
         private static Dictionary<string, Account> CheckAdded(Dictionary<string,Account> accounts, string name)

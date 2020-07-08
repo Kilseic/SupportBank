@@ -19,24 +19,25 @@ namespace SupportBank
             string wantData = UserInput("Do you want to import the test data? Y/N");
             if (wantData == "Y")
             {
-                List<Transaction> testDataTransactions = ReadFiles.ImportTestData();
-                accounts = Payments.MakeAllPayments(testDataTransactions, accounts);
+                accounts = ImportTestData(accounts);
             }
-            try
+            while (true)
             {
-                while (true)
+                string command = UserInput("Please enter a command: (or Exit)");
+                if (command == "Exit")
                 {
-                    string command = UserInput("Please enter a command: (or Exit)");
-                    if (command == "Exit")
-                    {
-                        break;
-                    }
+                    break;
+                }
+
+                try
+                {
                     accounts = Command.ExecuteCommand(command, accounts);
                 }
-            }
-            catch
-            {
-                Console.WriteLine("Program stopped, invalid data imported.");
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error executing command, refer to log files for details.");
+                    logger.Debug("Error executing command. " + ex.Message);
+                }
             }
         }
 
@@ -50,11 +51,31 @@ namespace SupportBank
             LogManager.Configuration = config;
         }
 
-        private static string UserInput(string question)
+        public static string UserInput(string question)
         {
             logger.Info("Asking for input.");
             Console.WriteLine(question);
             return Console.ReadLine();
+        }
+        
+        public static Dictionary<string, Account> ImportTestData(Dictionary<string, Account> accounts)
+        {
+            List<List<Transaction>> files = new List<List<Transaction>>();
+            files.Add(ReadFiles.ImportFile(@"C:\Work\Training\Transactions2014.txt"));
+            files.Add(ReadFiles.ImportFile(@"C:\Work\Training\DodgyTransactions2015.txt"));
+            files.Add(ReadFiles.ImportFile(@"C:\Work\Training\Transactions2013.json"));
+            foreach (var file in files)
+            {
+                try
+                {
+                    accounts = Payments.MakeAllPayments(file, accounts);
+                }
+                catch
+                {
+                    logger.Debug("Error importing test data.");
+                }
+            }
+            return accounts;
         }
     }
 }

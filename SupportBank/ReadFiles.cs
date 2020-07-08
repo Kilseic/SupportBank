@@ -64,14 +64,26 @@ namespace SupportBank
                 return items;
             }
         }
-        
-        public static List<Transaction> ImportTestData()
+
+        public static bool CheckData(List<Transaction> input)
         {
-            List<Transaction> fromCsv1 = ReadFiles.ImportFile(@"C:\Work\Training\Transactions2014.txt");
-            List<Transaction> fromCsv2 = ReadFiles.ImportFile(@"C:\Work\Training\DodgyTransactions2015.txt");
-            List<Transaction> fromJson = ReadFiles.ImportFile(@"C:\Work\Training\Transactions2013.json");
-            List<Transaction> lines = fromCsv1.Concat(fromCsv2).ToList();
-            List<Transaction> output = lines.Concat(fromJson).ToList();
+            bool output = true;
+            for (int i = 1; i < input.Count; i++)
+            {
+                if (!DateTime.TryParse(input[i].Date, out DateTime date))
+                {
+                    logger.Info("Found invalid date on line " + (i+1));
+                    Console.WriteLine("Found invalid date on line " + (i+1));
+                    output = false;
+                    continue;
+                }
+                if (!double.TryParse(input[i].Amount, out double amountD))
+                {
+                    logger.Info("Found invalid amount on line " + (i+1));
+                    Console.WriteLine("Found invalid amount on line " + (i+1));
+                    output = false;
+                }
+            }
             return output;
         }
     }
