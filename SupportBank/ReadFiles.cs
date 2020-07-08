@@ -65,6 +65,7 @@ namespace SupportBank
                                 }
                                 else
                                 {
+                                    Console.WriteLine("Invalid amount data found. ");
                                     temp.Amount = 0;
                                 }
 
