@@ -9,13 +9,17 @@ using NLog.Targets;
 
 namespace SupportBank
 {
+    interface IUserInteraction
+    {
+        Dictionary<string, Account> Accounts { get; set; }
+    }
     internal class Program
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
         public static void Main(string[] args)
         {
             StartLogging();
-            Dictionary<string, Account> accounts = new Dictionary<string, Account>();
+            Payments accounts = new Payments();
             string wantData = UserInput("Do you want to import the test data? Y/N");
             if (wantData == "Y")
             {
@@ -28,7 +32,6 @@ namespace SupportBank
                 {
                     break;
                 }
-
                 try
                 {
                     accounts = Command.ExecuteCommand(command, accounts);
@@ -58,7 +61,7 @@ namespace SupportBank
             return Console.ReadLine();
         }
         
-        public static Dictionary<string, Account> ImportTestData(Dictionary<string, Account> accounts)
+        public static Payments ImportTestData(Payments accounts)
         {
             List<List<Transaction>> files = new List<List<Transaction>>();
             files.Add(ReadFiles.ImportFile(@"C:\Work\Training\Transactions2014.txt"));
@@ -68,7 +71,7 @@ namespace SupportBank
             {
                 try
                 {
-                    accounts = Payments.MakeAllPayments(file, accounts);
+                    accounts.MakeAllPayments(file);
                 }
                 catch
                 {

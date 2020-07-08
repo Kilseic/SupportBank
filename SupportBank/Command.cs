@@ -8,15 +8,15 @@ namespace SupportBank
     public class Command
     {
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
-        public static Dictionary<string, Account> ExecuteCommand(string command, Dictionary<string, Account> accounts)
+        public static Payments ExecuteCommand(string command, Payments accounts)
         {
             logger.Debug("Got this command from user: "+ command);
             if (command == "List All")
             {
                 logger.Info("Listing all accounts and amounts.");
-                foreach (KeyValuePair<string, Account> kvp in accounts)
+                foreach (KeyValuePair<string, Account> kvp in accounts.Accounts)
                 {
-                    Console.WriteLine(kvp.Key + ": £" + kvp.Value.amount);
+                    Console.WriteLine(kvp.Key + ": £" + kvp.Value.Balance);
                 }
                 return accounts;
             }
@@ -25,10 +25,10 @@ namespace SupportBank
                 string name = command.Substring(5, command.Length - 5);
                 logger.Info("Listing all transactions for "+ name +".");
                 Account value;
-                if (accounts.TryGetValue(name, out value))
+                if (accounts.Accounts.TryGetValue(name, out value))
                 {
-                    Console.WriteLine(name + ": £" + accounts[name].amount);
-                    foreach (Transaction i in accounts[name].transactionHistory)
+                    Console.WriteLine(name + ": £" + accounts.Accounts[name].Balance);
+                    foreach (Transaction i in accounts.Accounts[name].TransactionHistory)
                     {
                         if (name == i.FromAccount)
                         {
@@ -55,7 +55,7 @@ namespace SupportBank
                     string answer = Program.UserInput("Would you like to import all valid data? Y/N");
                     if (answer == "Y")
                     {
-                        accounts = Payments.MakeAllPayments(newPayments, accounts);
+                        accounts.MakeAllPayments(newPayments);
                     }
                 }
                 Console.WriteLine("Data Imported.");

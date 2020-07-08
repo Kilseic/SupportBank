@@ -4,11 +4,17 @@ using NLog;
 
 namespace SupportBank
 {
-    class Payments
+    public class Account
     {
+        public double Balance;
+        public List<Transaction> TransactionHistory;
+    }
+    public class Payments
+    {
+        public Dictionary<string, Account> Accounts = new Dictionary<string, Account>();
+        
         private static readonly ILogger logger = LogManager.GetCurrentClassLogger();
-        public static Dictionary<string,Account> MakeAllPayments(List<Transaction> input, Dictionary<string,
-            Account> accounts)
+        public void MakeAllPayments(List<Transaction> input)
         {
             for (int i = 1; i < input.Count; i++)
             {
@@ -18,53 +24,45 @@ namespace SupportBank
                     logger.Info("Found invalid date on line " + (i+1));
                     continue;
                 }
-                accounts = MakePayment(accounts, input[i].FromAccount, input[i].ToAccount,
+                MakePayment(input[i].FromAccount, input[i].ToAccount,
                     input[i].Amount);
-                accounts = SavePayment(accounts,input[i].FromAccount, input[i].ToAccount, input[i]);
+                SavePayment(input[i].FromAccount, input[i].ToAccount, input[i]);
             }
-            return accounts;
         }
 
-        private static Dictionary<string, Account> SavePayment(Dictionary<string, Account> accounts,string person1, 
-            string person2, Transaction line)
+        private void SavePayment(string person1, string person2, Transaction line)
         {
-            accounts = CheckAdded(accounts, person1);
-            accounts = CheckAdded(accounts, person2);
+            CheckAdded(person1);
+            CheckAdded(person2);
             string[] names = {person1, person2};
             foreach (string i in names)
             {
                 Transaction temp = line;
-                accounts[i].transactionHistory.Add(temp);
+                Accounts[i].TransactionHistory.Add(temp);
             }
-            return accounts;
         }
         
-        private static Dictionary<string,Account> MakePayment(Dictionary<string,Account> accounts, string payer, 
-            string payee, string amount)
+        private void MakePayment(string payer, string payee, string amount)
         {
             if (double.TryParse(amount, out double amountD))
             {
-                accounts = CheckAdded(accounts, payer);
-                accounts = CheckAdded(accounts, payee);
-                accounts[payer].amount = Math.Round(accounts[payer].amount - amountD, 2);
-                accounts[payee].amount = Math.Round(accounts[payee].amount + amountD, 2);
-                return accounts;
+                CheckAdded(payer);
+                CheckAdded(payee);
+                Accounts[payer].Balance = Math.Round(Accounts[payer].Balance - amountD, 2);
+                Accounts[payee].Balance = Math.Round(Accounts[payee].Balance + amountD, 2);
             }
-            return accounts;
         }
 
-        private static Dictionary<string, Account> CheckAdded(Dictionary<string,Account> accounts, string name)
+        private void CheckAdded(string name)
         {
-            if (!accounts.TryGetValue(name, out Account value))
+            if (!Accounts.TryGetValue(name, out Account value))
             {
                 Account temp = new Account();
-                accounts[name] = temp;
-                accounts[name].amount = 0;
+                Accounts[name] = temp;
+                Accounts[name].Balance = 0;
                 List<Transaction> temp2 = new List<Transaction>();
-                accounts[name].transactionHistory = temp2;
+                Accounts[name].TransactionHistory = temp2;
             }
-
-            return accounts;
         }
     }
 }

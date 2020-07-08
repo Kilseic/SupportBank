@@ -2,12 +2,6 @@
 
 namespace SupportBank
 {
-    public class Account
-    {
-        public double amount;
-        public List<Transaction> transactionHistory;
-    }
-
     public class Transaction
     {
         public string Date;
